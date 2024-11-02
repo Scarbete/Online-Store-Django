@@ -1,0 +1,32 @@
+.product {
+    margin: 20px 0;
+}
+
+.product_block img {
+    width: 300px;
+    border-radius: 10px;
+}
+
+.dates {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comments {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.comment {
+    padding: 20px;
+    border-radius: 10px;
+    background: #3c3c3c;
+    color: #fff;
+}
+
+.comment h2 {
+    font-size: 24px;
+}

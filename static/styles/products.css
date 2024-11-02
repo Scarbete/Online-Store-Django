@@ -1,0 +1,20 @@
+.products {
+    margin: 20px 0;
+}
+
+.products_list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 30px;
+}
+
+.products_list .prod_card {
+    background: lightgray;
+    border-radius: 10px;
+    border: 1px solid gray;
+    padding: 10px;
+}
+
+.products_list .prod_card img {
+    width: 100%;
+}
