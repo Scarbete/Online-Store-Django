@@ -7,6 +7,10 @@
 {% endblock %}
 
 {% block content %}
+    <form action="/products/" method="get">
+        <input type="search" name="search">
+        <input type="submit" value="Search">
+    </form>
     <div class="products">
         <div class="container">
             <div class="products_list">
@@ -22,5 +26,14 @@
                 {% endfor %}
             </div>
         </div>
+    </div>
+    <div>
+        {% for page in pages %}
+            <a href="/products/?page={{ page }}">
+                <button>
+                    {{ page }}
+                </button>
+            </a>
+        {% endfor %}
     </div>
 {% endblock %}

@@ -20,11 +20,13 @@
                     <p>{{ product.modified_date }}</p>
                 </div>
             </section>
-            <form action="/products/{{ product.id }}" method="post">
-                {% csrf_token %}
-                {{ form }}
-                <input type="submit" value="Add comment">
-            </form>
+            {% if not user.is_anonymous %}
+            	<form action="/products/{{ product.id }}/" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                    <input type="submit" value="Add comment">
+                </form>
+            {% endif %}
             <section class="comments">
                 <h2>comments:</h2>
                 {% for comment in comments %}

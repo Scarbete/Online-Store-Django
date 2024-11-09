@@ -17,7 +17,13 @@
                 <div class="header__inner">
                     <a href="/">Home</a>
                     <a href="/products/">Products</a>
-                    <a href="/products/create">Create</a>
+                    <a href="/products/create/">Create</a>
+                    {% if user.is_anonymous %}
+                        <a href="/users/register/">Register</a>
+                        <a href="/users/login/">Login</a>
+                    {% else %}
+                        <a href="/users/logout/">logout</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>

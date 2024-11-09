@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from products.forms import ProductCreateForms, CommentCreateForms
 from products.models import Product, Comment
+from products.contsants import PAGINATION_LIMIT
 
 
 def main_page_view(request):
@@ -12,9 +13,22 @@ def products_page_view(request):
     if request.method == 'GET':
 
         products = Product.objects.all()
+        search = request.GET.get('search')
+        page = int(request.GET.get('page', 1))
+
+        if search:
+            products = products.filter(title__icontains=search) | products.filter(description__icontains=search)
+
+        max_page = products.__len__() / PAGINATION_LIMIT
+
+        max_page = round(max_page) + 1 if round(max_page) < max_page else round(max_page)
+
+        products = products[PAGINATION_LIMIT * (page - 1):PAGINATION_LIMIT * page]
 
         context = {
-            'products': products
+            'products': products,
+            'user': request.user,
+            'pages': range(1, max_page + 1),
         }
 
         return render(request, 'products/products.html', context=context)
@@ -28,7 +42,8 @@ def product_detail_view(request, id):
         context = {
             'product': product,
             'comments': product.comment_set.all(),
-            'form': CommentCreateForms
+            'form': CommentCreateForms,
+            'user': request.user,
         }
 
         return render(request, 'products/detail.html', context=context)
