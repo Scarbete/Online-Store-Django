@@ -2,21 +2,29 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from users.forms import RegisterForm, LoginForm
+from django.views.generic import ListView, CreateView
+from django.views import View
 
 
-def register_view(request):
-    if request.method == 'GET':
-        context = {
-            'form': RegisterForm
+class RegisterCBV(ListView, CreateView):
+    model = User
+    template_name = 'users/register.html'
+    form_class = RegisterForm
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return {
+            'form': kwargs['form'] if kwargs.get('form') else self.form_class
         }
-        return render(request, 'users/register.html', context=context)
 
-    if request.method == 'POST':
-        form = RegisterForm(data=request.POST)
+    def get(self, request, **kwargs):
+        return render(request, self.template_name, context=self.get_context_data())
+
+    def post(self, request, **kwargs):
+        form = self.form_class(data=request.POST)
 
         if form.is_valid():
             if form.cleaned_data.get('password1') == form.cleaned_data.get('password2'):
-                User.objects.create_user(
+                self.model.objects.create_user(
                     username=form.cleaned_data.get('username'),
                     password=form.cleaned_data.get('password1'),
                 )
@@ -24,18 +32,24 @@ def register_view(request):
             else:
                 form.add_error('password1', 'Пароли не совпадают!')
 
-            return render(request, 'users/register.html', context={'form': form})
+            return render(request, self.template_name, context=self.get_context_data(form=form))
 
 
-def login_view(request):
-    if request.method == 'GET':
-        context = {
-            'form': LoginForm
+class LoginCBV(ListView, CreateView):
+    model = User
+    template_name = 'users/login.html'
+    form_class = LoginForm
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return {
+            'form': kwargs['form'] if kwargs.get('form') else self.form_class
         }
-        return render(request, 'users/login.html', context=context)
 
-    if request.method == 'POST':
-        form = LoginForm(data=request.POST)
+    def get(self, request, **kwargs):
+        return render(request, self.template_name, context=self.get_context_data())
+
+    def post(self, request, **kwargs):
+        form = self.form_class(data=request.POST)
 
         if form.is_valid():
             user = authenticate(
@@ -50,9 +64,10 @@ def login_view(request):
             else:
                 form.add_error('username', 'Authenticate error, try again')
 
-        return render(request, 'users/login.html', context={'form': form})
+        return render(request, self.template_name, context=self.get_context_data(form=form))
 
 
-def logout_view(request):
-    logout(request)
-    return redirect('/products/')
+class LogoutCBV(View):
+    def get(self, request, **kwargs):
+        logout(request)
+        return redirect('/products/')

@@ -1,23 +1,23 @@
 from django.contrib import admin
 from django.urls import path
-from products.views import main_page_view, products_page_view, product_detail_view, create_product_view
-from users.views import register_view, login_view, logout_view
+from products.views import MainPageCBV, ProductsCBV, ProductDetailCBV, CreateProductCBV
+from users.views import RegisterCBV, LoginCBV, LogoutCBV
 from day_2_hw import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', main_page_view),
+    path('', MainPageCBV.as_view()),
     path('admin/', admin.site.urls),
 
     # Products
-    path('products/', products_page_view),
-    path('products/<int:id>/', product_detail_view),
-    path('products/create/', create_product_view),
+    path('products/', ProductsCBV.as_view()),
+    path('products/<int:id>/', ProductDetailCBV.as_view()),
+    path('products/create/', CreateProductCBV.as_view()),
 
     # Auth
-    path('users/register/', register_view),
-    path('users/login/', login_view),
-    path('users/logout/', logout_view),
+    path('users/register/', RegisterCBV.as_view()),
+    path('users/login/', LoginCBV.as_view()),
+    path('users/logout/', LogoutCBV.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,17 +2,20 @@ from django.shortcuts import render, redirect
 from products.forms import ProductCreateForms, CommentCreateForms
 from products.models import Product, Comment
 from products.contsants import PAGINATION_LIMIT
+from django.views.generic import ListView, DetailView, CreateView
 
 
-def main_page_view(request):
-    if request.method == 'GET':
-        return render(request, 'layouts/index.html')
+class MainPageCBV(ListView):
+    model = Product
+    template_name = 'layouts/index.html'
 
 
-def products_page_view(request):
-    if request.method == 'GET':
+class ProductsCBV(ListView):
+    model = Product
+    template_name = 'products/products.html'
 
-        products = Product.objects.all()
+    def get(self, request, **kwargs):
+        products = self.model.objects.all()
         search = request.GET.get('search')
         page = int(request.GET.get('page', 1))
 
@@ -31,26 +34,31 @@ def products_page_view(request):
             'pages': range(1, max_page + 1),
         }
 
-        return render(request, 'products/products.html', context=context)
+        return render(request, self.template_name, context=context)
 
 
-def product_detail_view(request, id):
-    if request.method == 'GET':
+class ProductDetailCBV(DetailView, CreateView):
+    model = Product
+    template_name = 'products/detail.html'
+    form_class = CommentCreateForms
 
-        product = Product.objects.get(id=id)
+    def get(self, request, **kwargs):
+        id = int(kwargs['id'])
+        product = self.model.objects.get(id=id)
 
         context = {
             'product': product,
             'comments': product.comment_set.all(),
-            'form': CommentCreateForms,
+            'form': self.form_class,
             'user': request.user,
         }
 
-        return render(request, 'products/detail.html', context=context)
+        return render(request, self.template_name, context=context)
 
-    if request.method == 'POST':
+    def post(self, request, **kwargs):
+        id = int(kwargs['id'])
         product = Product.objects.get(id=id)
-        form = CommentCreateForms(data=request.POST)
+        form = self.form_class(data=request.POST)
 
         if form.is_valid():
             Comment.objects.create(
@@ -64,21 +72,27 @@ def product_detail_view(request, id):
             'form': form
         }
 
-        return render(request, 'products/detail.html', context=context)
+        return render(request, self.template_name, context=context)
 
 
-def create_product_view(request):
-    if request.method == 'GET':
-        context = {
-            'form': ProductCreateForms
+class CreateProductCBV(ListView, CreateView):
+    model = Product
+    template_name = 'products/create.html'
+    form_class = ProductCreateForms
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return {
+            'form': kwargs['form'] if kwargs.get('form') else self.form_class
         }
-        return render(request, 'products/create.html', context)
 
-    if request.method == 'POST':
+    def get(self, request, **kwargs):
+        return render(request, self.template_name, self.get_context_data())
+
+    def post(self, request, **kwargs):
         form = ProductCreateForms(request.POST, request.FILES)
 
         if form.is_valid():
-            Product.objects.create(
+            self.model.objects.create(
                 image=form.cleaned_data.get('image'),
                 title=form.cleaned_data.get('title'),
                 description=form.cleaned_data.get('description'),
@@ -87,8 +101,4 @@ def create_product_view(request):
             )
             return redirect('/products/')
 
-        context = {
-            'form': form
-        }
-
-        return render(request, 'products/create.html', context=context)
+        return render(request, self.template_name, context=self.get_context_data(form=form))
