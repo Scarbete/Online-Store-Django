@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from products.views import MainPageCBV, ProductsCBV, ProductDetailCBV, CreateProductCBV
 from users.views import RegisterCBV, LoginCBV, LogoutCBV
-from day_2_hw import settings
+from online_store import settings
 from django.conf.urls.static import static
 
 urlpatterns = [

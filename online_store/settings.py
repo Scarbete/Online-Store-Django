@@ -44,7 +44,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'day_2_hw.urls'
+ROOT_URLCONF = 'online_store.urls'
 
 TEMPLATES = [
     {
@@ -62,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'day_2_hw.wsgi.application'
+WSGI_APPLICATION = 'online_store.wsgi.application'
 
 DATABASES = {
     'default': {
